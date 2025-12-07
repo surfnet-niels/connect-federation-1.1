@@ -1,0 +1,42 @@
+# OpenID Connect Federation 1.1
+
+The OpenID Connect Federation specification defines protocols and guidelines for implementing federated infrastructures among different domains and services, specifically focused on OpenID Connect use cases.
+
+## Overview
+
+OpenID Connect Federation 1.1 is:
+
+- a technical specification that defines how to evaluate Trust from a technical perspective in OpenID Connect contexts,
+- a technology that defines how to build trust infrastructures for OpenID Connect deployments,
+- a system for securely establishing the interoperability of OpenID Connect participants.
+
+## Releases
+
+The latest released draft of the specification is available at [https://openid.net/specs/openid-federation-1_0.html](https://openid.net/specs/openid-federation-1_0.html).
+The most recent Implementer's Draft is [https://openid.net/specs/openid-federation-1_0-ID4.html](https://openid.net/specs/openid-federation-1_0-ID4.html).
+
+## Current Builds
+
+The latest editors' draft is [https://openid.github.io/connect-federation-1.1/main.html](https://openid.github.io/connect-federation-1.1/main.html).
+
+Previews for each branch of this project are automatically built and published at the URL https://openid.github.io/connect-federation-1.1/$branchname.html.
+Previews for branches associated with pending Pull Requests are accessible using this pattern.
+
+## News
+
+News about OpenID Federation is available at the OpenID Foundation website [here](https://openid.net/tag/federation/).
+
+## Working on the Specification
+
+To get started working on the OpenID Connect Federation specification, clone this repository and review the documentation provided in the root directory.
+
+````bash
+git clone https://github.com/openid/connect-federation-1.1.git
+cd connect-federation-1.1
+````
+Read [CONTRIBUTING.md](CONTRIBUTING.md) to learn how to contribute to this project.
+
+## Contact Info
+
+For further information and to get involved, visit the [OpenID Connect Working Group website](https://openid.net/wg/connect/).
+
