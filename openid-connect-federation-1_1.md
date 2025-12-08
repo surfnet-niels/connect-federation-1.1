@@ -8,7 +8,7 @@ keyword = ["OpenID", "OpenID Connect", "Federation", "Multilateral Federation", 
 [seriesInfo]
 name = "Internet-Draft"
 value = "openid-connect-federation-1.1"
-stream = "IETF"
+status = "standard"
 
 [[author]]
 initials="R."
@@ -299,19 +299,11 @@ authority_hints
 
 trust_marks
 
-:   OPTIONAL. An array of JSON objects, each representing a Trust Mark.
+:   OPTIONAL. An array of JSON objects, each representing a Trust Mark. Trust Marks are described in [Section 7](#trust_marks){.auto .internal .xref}. Each object in the array contains the following members:
 
-    []{.break}
+    -   `trust_mark_type`: REQUIRED. Identifier for the type of the Trust Mark. The value of this claim MUST be the same as the value of the `trust_mark_type` claim contained in the Trust Mark JWT that is the value of the `trust_mark` claim in this object.
 
-    trust_mark_type
-    :   REQUIRED. Identifier for the type of the Trust Mark. The value of this claim MUST be the same as the value of the `trust_mark_type` claim contained in the Trust Mark JWT that is the value of the `trust_mark` claim in this object.
-    :   
-
-    trust_mark
-    :   REQUIRED. A signed JSON Web Token that represents a Trust Mark.
-    :   
-
-    Trust Marks are described in [Section 7](#trust_marks){.auto .internal .xref}.
+    -   `trust_mark`: REQUIRED. A signed JSON Web Token that represents a Trust Mark.
 
 
 trust_mark_issuers
@@ -321,15 +313,9 @@ trust_mark_owners
 
 :   OPTIONAL. If a Federation Operator knows that a Trust Mark type identifier is owned by an Entity different from the Trust Mark Issuer, then that knowledge MUST be expressed in this claim. This claim MUST be ignored if present in an Entity Configuration for an Entity that is not a Trust Anchor. It is a JSON object with member names that are Trust Mark type identifiers and each corresponding value being a JSON object with these members:
 
-    []{.break}
+    -   `sub`: REQUIRED Identifier of the Trust Mark Owner.
 
-    sub
-    :   REQUIRED Identifier of the Trust Mark Owner.
-    :   
-
-    jwks
-    :   REQUIRED [JSON Web Key Set (JWKS)](#RFC7517){.internal .xref} [[RFC7517](#RFC7517){.cite .xref}] containing the owner's Federation Entity Keys used for signing.
-    :   
+    -   `jwks`: REQUIRED [JSON Web Key Set (JWKS)](#RFC7517){.internal .xref} [[RFC7517](#RFC7517){.cite .xref}] containing the owner's Federation Entity Keys used for signing.
 
     Other members MAY also be defined and used.
 
@@ -985,42 +971,19 @@ The following metadata parameters define ways of obtaining JWK Sets for an Entit
 []{.break}
 
 signed_jwks_uri
-:   OPTIONAL. URL referencing a signed JWT having the Entity's JWK Set document for that Entity Type as its payload. This URL MUST use the `https` scheme. The JWT MUST be signed using a Federation Entity Key. A successful response from the URL MUST use the HTTP status code 200 with the content type `application/jwk-set+jwt`. When both signing and encryption keys are present, a `use` (public key use) parameter value is REQUIRED for all keys in the referenced JWK Set to indicate each key's intended usage.
+:   OPTIONAL. URL referencing a signed JWT having the Entity's JWK Set document for that Entity Type as its payload. This URL MUST use the `https` scheme. The JWT MUST be signed using a Federation Entity Key. A successful response from the URL MUST use the HTTP status code 200 with the content type `application/jwk-set+jwt`. When both signing and encryption keys are present, a `use` (public key use) parameter value is REQUIRED for all keys in the referenced JWK Set to indicate each key's intended usage. Signed JWK Set JWTs are explicitly typed by setting the `typ` header parameter to `jwk-set+jwt` to prevent cross-JWT confusion, per Section 3.11 of [[RFC8725](#RFC8725){.cite .xref}]. Signed JWK Set JWTs without a `typ` header parameter or with a different `typ` value MUST be rejected. Signed JWK Set JWTs MUST include the `kid` (Key ID) header parameter with its value being the Key ID of the signing key used. The following claims are specified for use in the payload, all of which except `keys` are defined in [[RFC7519](#RFC7519){.cite .xref}]:
 
-:   Signed JWK Set JWTs are explicitly typed by setting the `typ` header parameter to `jwk-set+jwt` to prevent cross-JWT confusion, per Section 3.11 of [[RFC8725](#RFC8725){.cite .xref}]. Signed JWK Set JWTs without a `typ` header parameter or with a different `typ` value MUST be rejected.
+    -   `keys`: REQUIRED. Array of JWK values in the JWK Set, as specified in Section 5.1 of [[RFC7517](#RFC7517){.cite .xref}].
 
-:   Signed JWK Set JWTs MUST include the `kid` (Key ID) header parameter with its value being the Key ID of the signing key used.
+    -   `iss`: REQUIRED. The "iss" (issuer) claim identifies the principal that issued the JWT.
 
-:   The following claims are specified for use in the payload, all of which except `keys` are defined in [[RFC7519](#RFC7519){.cite .xref}]:
+    -   `sub`: REQUIRED. This claim identifies the owner of the keys. It SHOULD be the same as the issuer.
 
-    []{.break}
+    -   `iat`: OPTIONAL. Number. Time when this signed JWK Set was issued. This is expressed as Seconds Since the Epoch, per [[RFC7519](#RFC7519){.cite .xref}].
 
-    keys
-    :   REQUIRED. Array of JWK values in the JWK Set, as specified in Section 5.1 of [[RFC7517](#RFC7517){.cite .xref}].
-    :   
+    -   `exp`: OPTIONAL. Number. This claim identifies the time when the JWT is no longer valid. This is expressed as Seconds Since the Epoch, per [[RFC7519](#RFC7519){.cite .xref}].
 
-    iss
-    :   REQUIRED. The "iss" (issuer) claim identifies the principal that issued the JWT.
-    :   
-
-    sub
-    :   REQUIRED. This claim identifies the owner of the keys. It SHOULD be the same as the issuer.
-    :   
-
-    iat
-    :   OPTIONAL. Number. Time when this signed JWK Set was issued. This is expressed as Seconds Since the Epoch, per [[RFC7519](#RFC7519){.cite .xref}].
-    :   
-
-    exp
-    :   OPTIONAL. Number. This claim identifies the time when the JWT is no longer valid. This is expressed as Seconds Since the Epoch, per [[RFC7519](#RFC7519){.cite .xref}].
-    :   
-
-    More claims are defined in [[RFC7519](#RFC7519){.cite .xref}]; of these, `aud` SHOULD NOT be used since the issuer cannot know who the audience is. `nbf` and `jti` are not particularly useful in this context and SHOULD be omitted.
-
-
-:   Additional claims MAY be defined and used in conjunction with the claims above.
-
-    The following is a non-normative example of the JWT Claims Set for a signed JWK Set.
+    More claims are defined in [[RFC7519](#RFC7519){.cite .xref}]; of these, `aud` SHOULD NOT be used since the issuer cannot know who the audience is. `nbf` and `jti` are not particularly useful in this context and SHOULD be omitted. Additional claims MAY be defined and used in conjunction with the claims above. The following is a non-normative example of the JWT Claims Set for a signed JWK Set.
 
     []{#name-example-jwt-claims-set-for-}
 
@@ -1648,7 +1611,7 @@ The following table is a map of the outputs produced by combinations of the `ess
   true        [a,b,c]   no parameter         error
   false       [a,b,c]   no parameter         no parameter
 
-  : [Table 1](#table-1): [Examples of Outputs with Combinations of `essential` and `subset_of` for Different Inputs](#name-examples-of-outputs-with-co) {#table-1}
+  : [Table 1](#table-1): [Examples of Outputs with Combinations of ](#name-examples-of-outputs-with-co)`essential`[ and ](#name-examples-of-outputs-with-co)`subset_of`[ for Different Inputs](#name-examples-of-outputs-with-co) {#table-1}
 
 
 
@@ -3024,26 +2987,15 @@ trust_mark
 
 status
 
-:   REQUIRED. Case-sensitive string value indicating the status of the Trust Mark. Values defined by this specification are:
+:   REQUIRED. Case-sensitive string value indicating the status of the Trust Mark. Values defined by this specification are listed below. Additional status values MAY be defined and used in addition to those listed:
 
-    []{.break}
+    -   `active`: The Trust Mark is active
 
-    active
-    :   The Trust Mark is active
-    :   
+    -   `expired`: The Trust Mark has expired
 
-    expired
-    :   The Trust Mark has expired
-    :   
+    -   `revoked`: The Trust Mark was revoked
 
-    revoked
-    :   The Trust Mark was revoked
-    :   
-
-    invalid
-    :   Signature validation failed or another error was detected
-    :
-:   Additional status values MAY be defined and used in addition to those above.
+    -   `invalid`: Signature validation failed or another error was detected
 
 Additional Trust Mark Status claims MAY be defined and used in addition to the one above.
 
@@ -3319,42 +3271,21 @@ iat
 
 keys
 
-:   REQUIRED. Array of JSON objects containing the signing keys for the Entity in JWK format.
+:   REQUIRED. Array of JSON objects containing the signing keys for the Entity in JWK format. JWKs in the `keys` claim use the following parameters listed below. Additional claims MAY be defined and used in conjunction with the claims listed:
 
-    JWKs in the `keys` claim use the following parameters:
+    -   `kid`: REQUIRED. Parameter used to match a specific key. It is RECOMMENDED that the Key ID be the JWK Thumbprint [[RFC7638](#RFC7638){.cite .xref}] of the key using the SHA-256 hash function.
 
-    []{.break}
+    -   `iat`: OPTIONAL. Number. Time when this key was issued. This is expressed as Seconds Since the Epoch, per [[RFC7519](#RFC7519){.cite .xref}].
 
-    kid
-    :   REQUIRED. Parameter used to match a specific key. It is RECOMMENDED that the Key ID be the JWK Thumbprint [[RFC7638](#RFC7638){.cite .xref}] of the key using the SHA-256 hash function.
-    :   
+    -   `exp`: REQUIRED. Number. Expiration time for the key. This is expressed as Seconds Since the Epoch, per [[RFC7519](#RFC7519){.cite .xref}], After this time the key MUST NOT be considered valid.
 
-    iat
-    :   OPTIONAL. Number. Time when this key was issued. This is expressed as Seconds Since the Epoch, per [[RFC7519](#RFC7519){.cite .xref}].
-    :   
+    -   `revoked`: OPTIONAL. JSON object that contains the properties of the revocation, as defined below:
 
-    exp
-    :   REQUIRED. Number. Expiration time for the key. This is expressed as Seconds Since the Epoch, per [[RFC7519](#RFC7519){.cite .xref}], After this time the key MUST NOT be considered valid.
-    :   
+        -   `revoked_at`: REQUIRED. Time when the key was revoked or must be considered revoked, using the time format defined for the `iat` claim in [[RFC7519](#RFC7519){.cite .xref}].
 
-    revoked
-
-    :   OPTIONAL. JSON object that contains the properties of the revocation, as defined below:
-
-        []{.break}
-
-        revoked_at
-        :   REQUIRED. Time when the key was revoked or must be considered revoked, using the time format defined for the `iat` claim in [[RFC7519](#RFC7519){.cite .xref}].
-        :   
-
-        reason
-        :   OPTIONAL. String that identifies the reason for the key revocation, as defined in [Section 8.7.3](#hist-keys-reasons){.auto .internal .xref}.
-        :   
+        -   `reason`: OPTIONAL. String that identifies the reason for the key revocation, as defined in [Section 8.7.3](#hist-keys-reasons){.auto .internal .xref}.
 
         Additional members of the `revoked` object MAY be defined and used.
-
-    :
-Additional claims MAY be defined and used in conjunction with the claims above.
 
 JWKs in the `keys` claim MAY also contain the `nbf` parameter. For use in Historical Keys, `iat` and `exp` are sufficient to establish the key lifetime, making `nbf` typically superfluous; however, it is registered for use by profiles that may choose to issue keys that do not immediately become valid at the time of issuance. Its definition is:
 
@@ -3507,51 +3438,28 @@ error
 
 :   REQUIRED. Error codes in the IANA "OAuth Extensions Error Registry" [[IANA.OAuth.Parameters](#IANA.OAuth.Parameters){.cite .xref}] MAY be used. This specification also defines the following error codes:
 
-    []{.break}
+    -   `invalid_request`: The request is incomplete or does not comply with current specifications. The HTTP response status code SHOULD be 400 (Bad Request).
 
-    invalid_request
-    :   The request is incomplete or does not comply with current specifications. The HTTP response status code SHOULD be 400 (Bad Request).
-    :   
+    -   `invalid_client`: The Client cannot be authorized or is not a valid participant of the federation. The HTTP response status code SHOULD be 401 (Unauthorized).
 
-    invalid_client
-    :   The Client cannot be authorized or is not a valid participant of the federation. The HTTP response status code SHOULD be 401 (Unauthorized).
-    :   
+    -   `invalid_issuer`: The endpoint cannot serve the requested issuer. The HTTP response status code SHOULD be 404 (Not Found).
 
-    invalid_issuer
-    :   The endpoint cannot serve the requested issuer. The HTTP response status code SHOULD be 404 (Not Found).
-    :   
+    -   `invalid_subject`: The endpoint cannot serve the requested subject. The HTTP response status code SHOULD be 404 (Not Found).
 
-    invalid_subject
-    :   The endpoint cannot serve the requested subject. The HTTP response status code SHOULD be 404 (Not Found).
-    :   
+    -   `invalid_trust_anchor`: The Trust Anchor cannot be found or used. The HTTP response status code SHOULD be 404 (Not Found).
 
-    invalid_trust_anchor
-    :   The Trust Anchor cannot be found or used. The HTTP response status code SHOULD be 404 (Not Found).
-    :   
+    -   `invalid_trust_chain`: The Trust Chain cannot be validated. The HTTP response status code SHOULD be 400 (Bad Request).
 
-    invalid_trust_chain
-    :   The Trust Chain cannot be validated. The HTTP response status code SHOULD be 400 (Bad Request).
-    :   
+    -   `invalid_metadata`: Metadata or Metadata Policy values are invalid or conflict. The HTTP response status code SHOULD be 400 (Bad Request).
 
-    invalid_metadata
-    :   Metadata or Metadata Policy values are invalid or conflict. The HTTP response status code SHOULD be 400 (Bad Request).
-    :   
+    -   `not_found`: The requested Entity Identifier cannot be found. The HTTP response status code SHOULD be 404 (Not Found).
 
-    not_found
-    :   The requested Entity Identifier cannot be found. The HTTP response status code SHOULD be 404 (Not Found).
-    :   
+    -   `server_error`: The server encountered an unexpected condition that prevented it from fulfilling the request. The HTTP response status code SHOULD be one in the 5xx range, like 500 (Internal Server Error).
 
-    server_error
-    :   The server encountered an unexpected condition that prevented it from fulfilling the request. The HTTP response status code SHOULD be one in the 5xx range, like 500 (Internal Server Error).
-    :   
+    -   `temporarily_unavailable`: The server hosting the federation endpoint is currently unable to handle the request due to temporary overloading or maintenance. The HTTP response status code SHOULD be 503 (Service Unavailable).
 
-    temporarily_unavailable
-    :   The server hosting the federation endpoint is currently unable to handle the request due to temporary overloading or maintenance. The HTTP response status code SHOULD be 503 (Service Unavailable).
-    :   
+    -   `unsupported_parameter`: The server does not support the requested parameter. The HTTP response status code SHOULD be 400 (Bad Request).
 
-    unsupported_parameter
-    :   The server does not support the requested parameter. The HTTP response status code SHOULD be 400 (Bad Request).
-    :
 error_description
 :   REQUIRED. Human-readable text providing additional information used to assist the developer in understanding the error that occurred.
 
