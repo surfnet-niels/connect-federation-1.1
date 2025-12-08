@@ -8,6 +8,7 @@ keyword = ["OpenID", "OpenID Connect", "Federation", "Multilateral Federation", 
 [seriesInfo]
 name = "Internet-Draft"
 value = "openid-connect-federation-1.1"
+stream = "IETF"
 status = "standard"
 
 [[author]]
