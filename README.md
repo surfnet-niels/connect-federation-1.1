@@ -1,19 +1,10 @@
 # OpenID Connect Federation 1.1
 
-The OpenID Connect Federation specification defines protocols and guidelines for implementing federated infrastructures among different domains and services, specifically focused on OpenID Connect use cases.
-
-## Overview
-
-OpenID Connect Federation 1.1 is:
-
-- a technical specification that defines how to evaluate Trust from a technical perspective in OpenID Connect contexts,
-- a technology that defines how to build trust infrastructures for OpenID Connect deployments,
-- a system for securely establishing the interoperability of OpenID Connect participants.
-
-## Releases
-
-The latest released draft of the specification is available at [https://openid.net/specs/openid-federation-1_0.html](https://openid.net/specs/openid-federation-1_0.html).
-The most recent Implementer's Draft is [https://openid.net/specs/openid-federation-1_0-ID4.html](https://openid.net/specs/openid-federation-1_0-ID4.html).
+The OpenID Connect Federation 1.1 specification contains the protocol-specific functionality defined in [OpenID Federation 1.0](https://openid.net/specs/openid-federation-1_0.html).
+This includes Entity Type Identifiers and Metadata for OpenID Connect and OAuth 2.0 Entities and Client Registration flows.
+These can be used in multilateral federations for the purpose of establishing trust,
+in combination with the protocol-independent functionality defined in OpenID Federation 1.1.
+This specification introduces no new functionality not present in OpenID Federation 1.0.
 
 ## Current Builds
 
